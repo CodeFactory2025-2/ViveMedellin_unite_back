@@ -1,0 +1,4 @@
+com\communityapp\CommunityAppApplication.class
+main\java\com\communityapp\auth\config\SecurityConfig.class
+main\java\com\communityapp\auth\controller\AuthController.class
+main\java\com\communityapp\group\controller\GroupController.class
