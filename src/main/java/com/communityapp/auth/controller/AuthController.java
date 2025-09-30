@@ -31,7 +31,7 @@ public class AuthController {
             session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
             return ResponseEntity.ok().body(Map.of("message", "Has iniciado sesion correctamente"));
         } catch (Exception e) {
-            return ResponseEntity.status(401).body(Map.of("error", "Credenciales invalidas"));
+            return ResponseEntity.status(401).build();
         }
     }
 }
