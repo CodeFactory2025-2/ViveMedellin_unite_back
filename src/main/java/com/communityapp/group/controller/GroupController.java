@@ -15,6 +15,6 @@ public class GroupController {
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(401).body(Map.of("error", "Debes iniciar sesión para crear un grupo"));
         }
-        return ResponseEntity.ok(Map.of("message", "Has iniciado sesión correctamente"));
+        return ResponseEntity.ok(Map.of("message", "Has iniciado sesion correctamente"));
     }
 }
