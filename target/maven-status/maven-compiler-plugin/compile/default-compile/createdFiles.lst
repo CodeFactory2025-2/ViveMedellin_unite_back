@@ -1,1 +1,11 @@
+com\communityapp\auth\controller\AuthController.class
+com\communityapp\auth\service\JwtService.class
 com\communityapp\CommunityAppApplication.class
+com\communityapp\auth\service\CustomUserDetailsService.class
+com\communityapp\auth\controller\AuthController$AuthRequest.class
+com\communityapp\auth\filter\JwtAuthenticationFilter.class
+com\communityapp\group\controller\GroupController.class
+com\communityapp\user\model\User.class
+com\communityapp\user\repository\UserRepository.class
+com\communityapp\auth\config\SecurityConfig.class
+com\communityapp\group\model\Group.class

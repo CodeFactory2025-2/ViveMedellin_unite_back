@@ -28,8 +28,28 @@ mvn spring-boot:run
 ## Probar login HU01
 
 $body = '{"username":"user","password":"password"}'
-$response = Invoke-WebRequest -Uri "http://localhost:8080/api/auth/login" -Method POST -Body $body -ContentType "application/json"
+$response = Invoke-WebRequest -Uri "http://localhost:8080/api/auth/login" -Method POST -Body $body -ContentType "application/json" -SessionVariable session
 $response.Content
+
+## Probar creación de grupo HU02
+
+$bodyGrupo = @{
+    nombreGrupo = "Club de Cine"
+    descripcion = "Un grupo para cinéfilos."
+    tema = "cultura"
+    reglas = @("Respetar opiniones", "No spoilers")
+    privacidad = "publico"
+} | ConvertTo-Json -Depth 3
+
+$bytes = [System.Text.Encoding]::UTF8.GetBytes($bodyGrupo)
+
+try {
+    $responseGrupo = Invoke-WebRequest -Uri "http://localhost:8080/api/groups" -Method POST -Body $bytes -ContentType "application/json" -WebSession $session
+    $responseGrupo.Content
+} catch {
+    $reader = New-Object System.IO.StreamReader($_.Exception.Response.GetResponseStream())
+    $reader.ReadToEnd()
+}
 
 
 
