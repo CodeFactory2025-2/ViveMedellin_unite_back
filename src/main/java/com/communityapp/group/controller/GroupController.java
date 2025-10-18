@@ -1,105 +1,96 @@
 package com.communityapp.group.controller;
 
 import com.communityapp.group.model.Group;
+import com.communityapp.group.service.GroupService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/groups")
+@CrossOrigin(origins = "*")
 public class GroupController {
-    // Estructura temporal en memoria para simular almacenamiento de grupos
-    private static final List<Group> grupos = new CopyOnWriteArrayList<>();
 
-    private static final List<String> TEMAS_VALIDOS = Arrays.asList("arte", "cultura", "deporte", "medio ambiente", "idiomas", "educación", "otro");
+    private final GroupService groupService;
 
+    @Autowired
+    public GroupController(GroupService groupService) {
+        this.groupService = groupService;
+    }
+
+    /**
+     * Endpoint para registrar un nuevo grupo en la base de datos.
+     * URL: POST http://localhost:8080/api/groups
+     * Ejemplo JSON:
+     * {
+     *   "nombreGrupo": "Amantes de la Tecnología",
+     *   "descripcion": "Un grupo para hablar de innovación",
+     *   "categoria": "Tecnología",
+     *   "categoriaOtro": "",
+     *   "privacidad": "Público",
+     *   "aceptaReglas": true,
+     *   "tema": "Innovación"
+     * }
+     */
     @PostMapping
-    public ResponseEntity<?> createGroup(@RequestBody Map<String, Object> body, Authentication authentication) {
-        System.out.println("Intento de crear grupo recibido");
+    public ResponseEntity<?> crearGrupo(@RequestBody Group group, Authentication authentication) {
+        Map<String, Object> response = new HashMap<>();
+
         try {
-            // Validar autenticación
-            if (authentication == null || !authentication.isAuthenticated()) {
-                System.out.println("No autenticado");
-                return ResponseEntity.status(401).body(Map.of("error", "Debes estar autenticado para crear un grupo."));
+            // ✅ Validaciones básicas
+            if (group.getNombreGrupo() == null || group.getNombreGrupo().isBlank()) {
+                response.put("error", "El nombre del grupo es obligatorio.");
+                return ResponseEntity.badRequest().body(response);
             }
 
-            // Validar que el cuerpo no esté vacío
-            if (body == null || body.isEmpty()) {
-                System.out.println("Cuerpo vacío o nulo");
-                return ResponseEntity.badRequest().body(Map.of("error", "El cuerpo de la solicitud no puede estar vacío y debe contener los campos requeridos."));
+            if (group.getCategoria() == null || group.getCategoria().isBlank()) {
+                response.put("error", "La categoría es obligatoria.");
+                return ResponseEntity.badRequest().body(response);
             }
 
-            // Obtener campos
-            String nombreGrupo = (String) body.get("nombreGrupo");
-            String descripcion = (String) body.getOrDefault("descripcion", "");
-            String tema = (String) body.get("tema");
-            String categoriaOtro = (String) body.get("categoriaOtro");
-            Object reglasObj = body.get("reglas");
-            List<String> reglas = null;
-            if (reglasObj instanceof List<?>) {
-                reglas = ((List<?>) reglasObj).stream().map(Object::toString).toList();
-            }
-            String privacidad = (String) body.get("privacidad");
-
-            // Validaciones
-            if (nombreGrupo == null || nombreGrupo.isBlank() || nombreGrupo.length() > 60) {
-                System.out.println("Validación fallida: nombreGrupo");
-                return ResponseEntity.badRequest().body(Map.of("error", "El campo 'nombreGrupo' es obligatorio y debe tener máximo 60 caracteres."));
-            }
-            if (descripcion != null && descripcion.length() > 5000) {
-                System.out.println("Validación fallida: descripcion");
-                return ResponseEntity.badRequest().body(Map.of("error", "La descripción no puede superar los 5000 caracteres."));
-            }
-            if (tema == null || !TEMAS_VALIDOS.contains(tema)) {
-                System.out.println("Validación fallida: tema");
-                return ResponseEntity.badRequest().body(Map.of("error", "El campo 'tema' es obligatorio y debe ser uno de: " + String.join(", ", TEMAS_VALIDOS)));
-            }
-            if ("otro".equals(tema)) {
-                if (categoriaOtro == null || categoriaOtro.isBlank() || categoriaOtro.length() > 20) {
-                    System.out.println("Validación fallida: categoriaOtro");
-                    return ResponseEntity.badRequest().body(Map.of("error", "Si el tema es 'otro', el campo 'categoriaOtro' es obligatorio y debe tener máximo 20 caracteres."));
-                }
-            }
-            if (reglas == null || reglas.isEmpty()) {
-                System.out.println("Validación fallida: reglas");
-                return ResponseEntity.badRequest().body(Map.of("error", "Debes seleccionar al menos una regla."));
-            }
-            if (privacidad == null || !("publico".equals(privacidad) || "privado".equals(privacidad))) {
-                System.out.println("Validación fallida: privacidad");
-                return ResponseEntity.badRequest().body(Map.of("error", "El campo 'privacidad' es obligatorio y debe ser 'publico' o 'privado'."));
+            if (group.getTema() == null || group.getTema().isBlank()) {
+                response.put("error", "El tema es obligatorio.");
+                return ResponseEntity.badRequest().body(response);
             }
 
-            // Simular unicidad del nombre del grupo
-            boolean existe = grupos.stream().anyMatch(g -> g.getNombreGrupo().equalsIgnoreCase(nombreGrupo));
-            if (existe) {
-                System.out.println("Validación fallida: unicidad nombreGrupo");
-                return ResponseEntity.badRequest().body(Map.of("error", "Ya existe un grupo con ese nombre. Elige otro nombre de grupo."));
+            if (!group.isAceptaReglas()) {
+                response.put("error", "Debes aceptar las reglas para crear el grupo.");
+                return ResponseEntity.badRequest().body(response);
             }
 
-            // Crear grupo
-            Group grupo = new Group();
-            grupo.setNombreGrupo(nombreGrupo);
-            grupo.setDescripcion(descripcion);
-            grupo.setTema(tema);
-            grupo.setCategoriaOtro("otro".equals(tema) ? categoriaOtro : null);
-            grupo.setReglas(reglas);
-            grupo.setPrivacidad(privacidad);
-            grupo.setAdminId(1L); // Simulación: el usuario autenticado es admin (puedes usar el id real si lo tienes)
+            // ✅ Asignar adminId desde autenticación si está disponible
+            if (authentication != null && authentication.isAuthenticated()) {
+                System.out.println("Usuario autenticado: " + authentication.getName());
+                // Aquí debes mapear tu objeto UserDetails para obtener el ID real
+                // Por ejemplo:
+                // Long usuarioId = ((CustomUserDetails) authentication.getPrincipal()).getId();
+                // group.setAdminId(usuarioId);
+            } else if (group.getAdminId() == null) {
+                response.put("error", "No se pudo determinar el ID del administrador.");
+                return ResponseEntity.badRequest().body(response);
+            }
 
-            grupos.add(grupo);
-            System.out.println("Grupo creado correctamente");
+            // ✅ Guardar en base de datos
+            Group nuevoGrupo = groupService.crearGrupo(group);
 
-            return ResponseEntity.status(201).body(Map.of(
-                "mensaje", String.format("El grupo “%s” se ha creado correctamente.", nombreGrupo),
-                "grupo", grupo
-            ));
+            response.put("mensaje", "Grupo creado exitosamente.");
+            response.put("grupo", nuevoGrupo);
+            return ResponseEntity.status(201).body(response);
+
+        } catch (IllegalArgumentException e) {
+            // ⚠️ Errores de validación desde el servicio
+            response.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+
         } catch (Exception e) {
+            // ⚠️ Errores inesperados
             e.printStackTrace();
-            return ResponseEntity.status(500).body(Map.of(
-                "error", "Hubo un error técnico al procesar tu solicitud. No se pudo crear el grupo. Por favor, inténtalo nuevamente más tarde."
-            ));
+            response.put("error", "Error al crear el grupo. Intenta nuevamente más tarde.");
+            return ResponseEntity.internalServerError().body(response);
         }
     }
 }
