@@ -93,4 +93,45 @@ public class GroupController {
             return ResponseEntity.internalServerError().body(response);
         }
     }
+
+    /**
+ * ✅ Unirse a un grupo
+ */
+@PostMapping("/{id}/join")
+public ResponseEntity<?> unirseAGrupo(@PathVariable Long id, Authentication authentication) {
+    Map<String, Object> response = new HashMap<>();
+
+    try {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            response.put("error", "Debes estar autenticado para unirte a un grupo.");
+            return ResponseEntity.status(401).body(response);
+        }
+
+        String username = authentication.getName();
+        Long usuarioId = groupService.obtenerIdUsuarioPorUsername(username);
+
+        if (usuarioId == null) {
+            response.put("error", "Usuario no encontrado.");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        boolean unido = groupService.unirUsuarioAGrupo(usuarioId, id);
+
+        if (unido) {
+            response.put("mensaje", "Te has unido al grupo exitosamente.");
+        } else {
+            response.put("mensaje", "Ya perteneces a este grupo o no se pudo completar la acción.");
+        }
+
+        return ResponseEntity.ok(response);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        response.put("error", "Error al intentar unirse al grupo.");
+        return ResponseEntity.internalServerError().body(response);
+    }
 }
+
+
+}
+

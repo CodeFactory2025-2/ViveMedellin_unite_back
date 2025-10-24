@@ -1,0 +1,15 @@
+com\communityapp\group\repository\GroupMemberRepository.class
+com\communityapp\auth\service\JwtService.class
+com\communityapp\CommunityAppApplication.class
+com\communityapp\auth\service\CustomUserDetailsService.class
+com\communityapp\auth\controller\AuthController$AuthRequest.class
+com\communityapp\auth\filter\JwtAuthenticationFilter.class
+com\communityapp\group\controller\GroupController.class
+com\communityapp\user\model\User.class
+com\communityapp\group\service\GroupService.class
+com\communityapp\auth\controller\AuthController.class
+com\communityapp\group\repository\GroupRepository.class
+com\communityapp\group\model\GroupMember.class
+com\communityapp\user\repository\UserRepository.class
+com\communityapp\auth\config\SecurityConfig.class
+com\communityapp\group\model\Group.class

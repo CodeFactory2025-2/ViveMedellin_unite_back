@@ -9,7 +9,7 @@ import java.util.Collection;
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
-    @Id
+      @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -19,12 +19,19 @@ public class User implements UserDetails {
     @Column(name = "password", nullable = false)
     private String password;
 
+    // ✅ Getters y Setters
+    public Long getId() {
+        return id;
+    }
 
-    // ... aquí irían roles más adelante
+    public void setId(Long id) {
+        this.id = id;
+    }
 
+    // Opcional: si quieres sobreescribir
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+    public String getUsername() {
+        return username;
     }
 
     @Override
@@ -33,8 +40,8 @@ public class User implements UserDetails {
     }
 
     @Override
-    public String getUsername() {
-        return username;
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
     }
 
     @Override
