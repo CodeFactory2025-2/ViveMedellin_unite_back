@@ -21,15 +21,15 @@ public class CustomUserDetailsService implements UserDetailsService {
 */
 @Override
 public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    System.out.println("🟡 Buscando usuario: " + username);
+    System.out.println(" Buscando usuario: " + username);
     return userRepository.findByUsername(username)
             .map(user -> {
-                System.out.println("🟢 Usuario encontrado: " + user.getUsername());
-                System.out.println("🔐 Password hash en BD: " + user.getPassword());
+                System.out.println("Usuario encontrado: " + user.getUsername());
+                System.out.println("Password hash en BD: " + user.getPassword());
                 return user;
             })
             .orElseThrow(() -> {
-                System.out.println("🔴 Usuario no encontrado en BD: " + username);
+                System.out.println("Usuario no encontrado en BD: " + username);
                 return new UsernameNotFoundException("Usuario no encontrado: " + username);
             });
 }

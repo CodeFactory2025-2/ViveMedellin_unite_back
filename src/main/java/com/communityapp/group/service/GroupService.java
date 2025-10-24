@@ -39,18 +39,15 @@ public class GroupService {
         return groupRepository.save(group);
     }
 
-    /**
-     * 🔹 Obtener el ID del usuario autenticado a partir del username
-     */
+    //Obtener el ID del usuario autenticado a partir del username
+     
     public Long obtenerIdUsuarioPorUsername(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado: " + username));
         return user.getId();
     }
 
-    /**
-     * 🔹 Permitir que un usuario se una a un grupo
-     */
+    // Permitir que un usuario se una a un grupo
     public boolean unirUsuarioAGrupo(Long usuarioId, Long grupoId) {
         if (!groupRepository.existsById(grupoId)) {
             throw new IllegalArgumentException("El grupo con ID " + grupoId + " no existe.");
@@ -69,6 +66,31 @@ public class GroupService {
 
         groupMemberRepository.save(miembro);
         return true;
-    }
+        
     }
 
+    // Eliminar un grupo por ID (solo el admin puede hacerlo)
+    public boolean eliminarGrupo(Long grupoId, Long usuarioId) {
+ 
+        Group grupo = groupRepository.findById(grupoId)
+                .orElseThrow(() -> new IllegalArgumentException("El grupo con ID " + grupoId + " no existe."));
+
+        if (!grupo.getAdminId().equals(usuarioId)) {
+            throw new SecurityException("Solo el administrador del grupo puede eliminarlo.");
+    }
+
+   
+        groupMemberRepository.deleteAll(
+                groupMemberRepository.findAll()
+                    .stream()
+                    .filter(m -> m.getGroupId().equals(grupoId))
+                    .toList()
+    );
+
+
+        groupRepository.delete(grupo);
+
+        return true;
+}
+
+}

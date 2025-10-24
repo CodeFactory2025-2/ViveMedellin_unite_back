@@ -41,7 +41,7 @@ public class GroupController {
         Map<String, Object> response = new HashMap<>();
 
         try {
-            // ✅ Validaciones básicas
+            // Validaciones básicas
             if (group.getNombreGrupo() == null || group.getNombreGrupo().isBlank()) {
                 response.put("error", "El nombre del grupo es obligatorio.");
                 return ResponseEntity.badRequest().body(response);
@@ -62,7 +62,7 @@ public class GroupController {
                 return ResponseEntity.badRequest().body(response);
             }
 
-            // ✅ Asignar adminId desde autenticación si está disponible
+            // Asignar adminId desde autenticación si está disponible
             if (authentication != null && authentication.isAuthenticated()) {
                 System.out.println("Usuario autenticado: " + authentication.getName());
                 // Aquí debes mapear tu objeto UserDetails para obtener el ID real
@@ -74,7 +74,7 @@ public class GroupController {
                 return ResponseEntity.badRequest().body(response);
             }
 
-            // ✅ Guardar en base de datos
+            //  Guardar en base de datos
             Group nuevoGrupo = groupService.crearGrupo(group);
 
             response.put("mensaje", "Grupo creado exitosamente.");
@@ -82,21 +82,21 @@ public class GroupController {
             return ResponseEntity.status(201).body(response);
 
         } catch (IllegalArgumentException e) {
-            // ⚠️ Errores de validación desde el servicio
+            //  Errores de validación desde el servicio
             response.put("error", e.getMessage());
             return ResponseEntity.badRequest().body(response);
 
         } catch (Exception e) {
-            // ⚠️ Errores inesperados
+            // Errores inesperados
             e.printStackTrace();
             response.put("error", "Error al crear el grupo. Intenta nuevamente más tarde.");
             return ResponseEntity.internalServerError().body(response);
         }
     }
 
-    /**
- * ✅ Unirse a un grupo
- */
+   
+ // Unirse a un grupo
+ 
 @PostMapping("/{id}/join")
 public ResponseEntity<?> unirseAGrupo(@PathVariable Long id, Authentication authentication) {
     Map<String, Object> response = new HashMap<>();
@@ -132,6 +132,45 @@ public ResponseEntity<?> unirseAGrupo(@PathVariable Long id, Authentication auth
     }
 }
 
+// Eliminar un grupo (solo el admin puede hacerlo)
 
+@DeleteMapping("/{id}")
+public ResponseEntity<?> eliminarGrupo(@PathVariable Long id, Authentication authentication) {
+    Map<String, Object> response = new HashMap<>();
+
+    try {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            response.put("error", "Debes estar autenticado para eliminar un grupo.");
+            return ResponseEntity.status(401).body(response);
+        }
+
+        String username = authentication.getName();
+        Long usuarioId = groupService.obtenerIdUsuarioPorUsername(username);
+
+        boolean eliminado = groupService.eliminarGrupo(id, usuarioId);
+
+        if (eliminado) {
+            response.put("mensaje", "Grupo eliminado correctamente.");
+            return ResponseEntity.ok(response);
+        } else {
+            response.put("error", "No se pudo eliminar el grupo.");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+    } catch (SecurityException e) {
+        response.put("error", e.getMessage());
+        return ResponseEntity.status(403).body(response);
+
+    } catch (IllegalArgumentException e) {
+        response.put("error", e.getMessage());
+        return ResponseEntity.badRequest().body(response);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        response.put("error", "Error al eliminar el grupo. Intenta nuevamente.");
+        return ResponseEntity.internalServerError().body(response);
+    }
 }
 
+
+}

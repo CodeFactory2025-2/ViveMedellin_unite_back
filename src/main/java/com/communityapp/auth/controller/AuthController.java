@@ -1,5 +1,6 @@
 package com.communityapp.auth.controller;
 
+import com.communityapp.auth.service.CustomUserDetailsService;
 import com.communityapp.auth.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,6 +21,9 @@ public class AuthController {
 
     @Autowired
     private JwtService jwtService;
+
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
 
     @PostMapping("/login")
     public Map<String, String> login(@RequestBody AuthRequest request) {
