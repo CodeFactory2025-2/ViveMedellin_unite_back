@@ -67,5 +67,22 @@ public class GroupPostController {
             return ResponseEntity.status(404).body(e.getMessage());
         }
     }
+
+    /**
+ * 🔎 Buscar publicaciones por palabra clave en un grupo
+ */
+    @GetMapping("/{groupId}/posts/search")
+    public ResponseEntity<?> buscarPosts(@PathVariable Long groupId,
+                                        @org.springframework.web.bind.annotation.RequestParam String keyword) {
+        try {
+            List<GroupPost> resultados = groupPostService.buscarPublicaciones(groupId, keyword);
+            return ResponseEntity.ok(resultados);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+             e.printStackTrace();
+            return ResponseEntity.internalServerError().body(Map.of("error", "Error al buscar publicaciones."));
+    }
     
+}
 }

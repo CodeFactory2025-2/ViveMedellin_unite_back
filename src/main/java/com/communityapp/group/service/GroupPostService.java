@@ -51,5 +51,22 @@ public class GroupPostService {
         return postRepository.findByGroupIdOrderByCreatedAtDesc(groupId);
     }
 
+    /**
+     * 🔎 Buscar publicaciones por palabra clave dentro de un grupo
+     */
+    public List<GroupPost> buscarPublicaciones(Long groupId, String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            throw new IllegalArgumentException("La palabra clave no puede estar vacía.");
+    }
+
+        List<GroupPost> resultados = postRepository.searchPostsByContent(groupId, keyword);
+
+        if (resultados.isEmpty()) {
+            throw new IllegalArgumentException("No se encontraron publicaciones que coincidan con: " + keyword);
+    }
+
+        return resultados;
+}
+
     
 }
