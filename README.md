@@ -34,7 +34,7 @@ Este proyecto es un backend desarrollado en Spring Boot, conectado a PostgreSQL 
 
 
 ```java
- /auth/register
+ /auth/login
 ```
 
 ```json
@@ -137,7 +137,72 @@ Token requerido
 }
 ```
 
+## Microservicios de proyecto
+Este proyecto sigue una arquitectura monolito modular, donde los módulos actúan como microservicios lógicos:
 
+### Microservicio 1 - AuthService
+#### Funcionalidad 
+- Autenticación
+- Generación y validación JWT
+- Configuración de seguridad de rutas
+
+#### Archivos importantes
+| Archivo                         | Propósito                             |
+| ------------------------------- | ------------------------------------- |
+| `SecurityConfig.java`           | Configura rutas públicas y protegidas |
+| `JwtService.java`               | Genera y valida tokens                |
+| `CustomUserDetailsService.java` | Carga usuarios para autenticación     |
+
+#### Endpoints 
+```java
+ POST /api/auth/login
+```
+```java
+ POST /api/auth/check
+```
+
+### Microservicio 2 - GroupService
+
+#### Funcionalidad
+- CRUD de grupos
+#### Archivos importantes 
+
+| Archivo                 | Propósito               |
+| ----------------------- | ----------------------- |
+| `GroupService.java`     | Lógica de grupos        |
+
+#### Endpoints 
+```java
+POST /api/groups
+```
+```java
+POST /api/groups/{id}/join
+```
+```java
+DELETE /api/groups/{id}
+```
+
+### Microservicio 3 - PostService
+
+#### Funcionalidad
+- Publicaciones dentrho de los grupos
+
+#### Archivos importantes 
+| Archivo                 | Propósito               |
+| ----------------------- | ----------------------- |
+| `GroupPostService.java` | Lógica de publicaciones |
+
+#### Endpoints 
+```java
+GET /api/groups/{groupId}/posts
+
+```
+```java
+POST /api/groups/{groupId}/posts
+```
+```java
+GET  /api/groups/{groupId}/posts/search|
+```
 ## Tablas creadas automáticamente vía JPA - Base de datos
 | Tabla | Función | 
 |--------|--------|
@@ -179,6 +244,7 @@ CREATE TABLE users (
 
 ##  Cómo ejecutar
 
+
 ### Requisitos
 - JDK 17 o superior
 - Maven 3.6+
@@ -188,8 +254,12 @@ CREATE TABLE users (
 ```bash
 mvn spring-boot:run
 ```
+### Variables de entorno
+| Variable      | Contraseña            |
+| ------------- | --------------------- |
+| `DB_PASSWORD` | `WgHXj6Ix4k020g53`    |
 
-## Swagger
+### Swagger
 ```bash
 http://localhost:8080/swagger-ui/index.html
 ```
@@ -197,5 +267,24 @@ http://localhost:8080/swagger-ui/index.html
 ```bash
 http://localhost:8080
 ```
+### Para conectar con Supabase 
 
-
+ Debe correrlo en terminal CMD. Si necesita acceso a la organización en Supabase solicitelo a el rol BackEnd o Base de datos 
+```bash
+npm install supabase --global
+```
+```bash
+bun install -g supabase
+```
+```bash
+supabase --version
+```
+```bash
+supabase login
+```
+```bash
+supabase link --project-ref mzcoquezpedrwgeekgvk
+```
+```bash
+supabase db connect
+```
