@@ -26,3 +26,5 @@ ENV JAVA_OPTS=""
 
 # Comando para ejecutar el contenedor
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
+
+ARG JAR_FILE=target/*.jar
