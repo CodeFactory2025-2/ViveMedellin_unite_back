@@ -77,6 +77,7 @@ public class JoinRequestController {
                             "Hubo un error técnico al procesar tu solicitud. Por favor, inténtalo nuevamente más tarde."));
         }
     }
-
+    
+    
     
 }
