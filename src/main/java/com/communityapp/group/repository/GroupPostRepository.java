@@ -10,7 +10,7 @@ import java.util.List;
 public interface GroupPostRepository extends JpaRepository<GroupPost, Long> {
     List<GroupPost> findByGroupIdOrderByCreatedAtDesc(Long groupId);
 
-     // ✅ Corrección: los nombres del parámetro deben coincidir (keyword = keyword)
+   
     @Query("""
         SELECT p FROM GroupPost p
         WHERE p.group.id = :groupId

@@ -22,20 +22,7 @@ public class GroupController {
         this.groupService = groupService;
     }
 
-    /**
-     * Endpoint para registrar un nuevo grupo en la base de datos.
-     * URL: POST http://localhost:8080/api/groups
-     * Ejemplo JSON:
-     * {
-     *   "nombreGrupo": "Amantes de la Tecnología",
-     *   "descripcion": "Un grupo para hablar de innovación",
-     *   "categoria": "Tecnología",
-     *   "categoriaOtro": "",
-     *   "privacidad": "Público",
-     *   "aceptaReglas": true,
-     *   "tema": "Innovación"
-     * }
-     */
+
     @PostMapping
     public ResponseEntity<?> crearGrupo(@RequestBody Group group, Authentication authentication) {
         Map<String, Object> response = new HashMap<>();

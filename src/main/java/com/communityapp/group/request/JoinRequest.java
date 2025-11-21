@@ -26,6 +26,9 @@ public class JoinRequest {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @Column(name = "responded_at")
+    private LocalDateTime respondedAt;
+
     public JoinRequest() {}
 
     public JoinRequest(Long id, Long groupId, Long userId, JoinRequestStatus status, LocalDateTime createdAt) {
@@ -51,6 +54,10 @@ public class JoinRequest {
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public LocalDateTime getRespondedAt() { return respondedAt; }
+    public void setRespondedAt(LocalDateTime respondedAt) { this.respondedAt = respondedAt; }
 }
+
     
 

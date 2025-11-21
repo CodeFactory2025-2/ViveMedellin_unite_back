@@ -49,7 +49,7 @@ public class AuthController {
 
     }
 
-    // (Opcional) Ruta para probar token
+  
     @GetMapping("/check")
     public Map<String, String> check() {
         Map<String, String> res = new HashMap<>();
@@ -57,7 +57,7 @@ public class AuthController {
         return res;
     }
 
-    // DTO interno o clase separada para la solicitud
+   
     public static class AuthRequest {
         private String username;
         private String password;

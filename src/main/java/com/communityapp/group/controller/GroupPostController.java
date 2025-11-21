@@ -31,7 +31,7 @@ public class GroupPostController {
         this.groupPostService = groupPostService;
     }
 
-   // Crear una publicación en un grupo (requiere token)
+   // Crear una publicación en un grupo 
     
     @PostMapping("/{groupId}/posts")
     public ResponseEntity<?> crearPost(@PathVariable Long groupId, @RequestBody Map<String, String> body, Principal principal) {
@@ -56,7 +56,7 @@ public class GroupPostController {
         }
     }
 
-    //btener todas las publicaciones de un grupo
+    //Obtener todas las publicaciones de un grupo
     
     @GetMapping("/{groupId}/posts")
     public ResponseEntity<?> obtenerPosts(@PathVariable Long groupId) {
@@ -68,9 +68,9 @@ public class GroupPostController {
         }
     }
 
-    /**
- * 🔎 Buscar publicaciones por palabra clave en un grupo
- */
+    
+  //Buscar publicaciones por palabra clave en un grupo
+ 
     @GetMapping("/{groupId}/posts/search")
     public ResponseEntity<?> buscarPosts(@PathVariable Long groupId,
                                         @org.springframework.web.bind.annotation.RequestParam String keyword) {
