@@ -74,17 +74,14 @@ public class JoinRequestService {
      
     public String acceptJoinRequest(Long userId, Long groupId) {
 
-        // 1. Buscar la solicitud que esté PENDIENTE
         JoinRequest joinRequest = joinRequestRepository
                 .findByUserIdAndGroupIdAndStatus(userId, groupId, JoinRequestStatus.PENDING)
                 .orElseThrow(() -> new RuntimeException("No existe una solicitud pendiente."));
 
-        // 2. Validar que el usuario no sea ya miembro
         if (groupMemberRepository.existsByUserIdAndGroupId(userId, groupId)) {
             throw new RuntimeException("El usuario ya es miembro del grupo.");
         }
 
-        // 3. Crear el nuevo miembro
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new RuntimeException("Grupo no encontrado"));
 
@@ -98,13 +95,52 @@ public class JoinRequestService {
 
         groupMemberRepository.save(member);
 
-        // 4. Actualizar solicitud como ACEPTADA
         joinRequest.setStatus(JoinRequestStatus.APPROVED);
         joinRequest.setRespondedAt(LocalDateTime.now());
 
         joinRequestRepository.save(joinRequest);
 
-        // 5. Retornar mensaje para mostrar al administrador y notificar al usuario
+
         return "La solicitud fue aceptada correctamente.";
+    }
+// Rechazar SOLICITUD DE UNIRSE A GRUPO
+    @Transactional
+    public String rejectJoinRequest(Long requestId, Long adminId) {
+        JoinRequest joinRequest = joinRequestRepository.findById(requestId)
+                .orElseThrow(() -> new IllegalArgumentException("No existe la solicitud."));
+
+        if (joinRequest.getStatus() != JoinRequestStatus.PENDING) {
+            throw new IllegalStateException("La solicitud no está pendiente o ya fue respondida.");
+        }
+
+        Long groupId = joinRequest.getGroupId();
+
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new IllegalArgumentException("Grupo no encontrado"));
+
+
+        verifyAdmin(adminId, group);
+
+       
+        joinRequest.setStatus(JoinRequestStatus.REJECTED);
+        joinRequest.setRespondedAt(LocalDateTime.now());
+        joinRequestRepository.save(joinRequest);
+
+       
+        return "La solicitud fue rechazada correctamente.";
+    }
+
+    private void verifyAdmin(Long adminId, Group group) {
+     
+        try {
+            Long ownerId = group.getAdminId();
+            if (ownerId == null || !ownerId.equals(adminId)) {
+                throw new SecurityException("No estás autorizado para gestionar solicitudes de este grupo.");
+            }
+            return;
+        } catch (Throwable ex) {
+          
+            throw new SecurityException("No se pudo verificar que seas administrador del grupo. Ajusta verifyAdmin() según tu modelo Group.");
+        }
     }
 }

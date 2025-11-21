@@ -78,6 +78,39 @@ public class JoinRequestController {
         }
     }
     
-    
-    
+    // Rechazar una solicitud de unirse a un grupo
+    @PostMapping("/requests/{id}/reject")
+    public ResponseEntity<?> rejectRequest(@PathVariable Long id,
+                                           @AuthenticationPrincipal User principal) {
+
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Usuario no autenticado."));
+        }
+
+        Long adminId = principal.getId();
+
+        try {
+            String msg = joinRequestService.rejectJoinRequest(id, adminId);
+
+            return ResponseEntity.ok(Map.of(
+                    "message", msg,
+                    "status", "REJECTED"
+            ));
+
+        } catch (SecurityException ex) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", ex.getMessage()));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", ex.getMessage()));
+        } catch (IllegalStateException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", ex.getMessage()));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Hubo un error técnico al procesar tu solicitud. Por favor, inténtalo nuevamente más tarde."));
+        }
+    }
 }
+    
+    
+
