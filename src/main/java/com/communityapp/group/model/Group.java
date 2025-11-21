@@ -6,33 +6,34 @@ import jakarta.persistence.*;
 @Table(name = "groups")
 public class Group {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 60)
+    @Column(name = "nombre_grupo", nullable = false, length = 60)
     private String nombreGrupo;
 
     @Column(length = 5000)
     private String descripcion;
 
     @Column(nullable = false, length = 50)
-    private String categoria; // Cambiado de 'tema' a 'categoria'
+    private String categoria;
 
-    @Column(length = 50)
-    private String categoriaOtro; // Solo si el usuario selecciona "Otro"
+    @Column(name = "categoria_otro", length = 50)
+    private String categoriaOtro;
 
     @Column(nullable = false, length = 10)
-    private String privacidad; // "Público" o "Privado"
+    private String privacidad;
 
-    @Column(nullable = false)
-    private boolean aceptaReglas; // Nuevo: checkbox de aceptación
+    @Column(name = "acepta_reglas", nullable = false)
+    private boolean aceptaReglas;
 
-    @Column(nullable = false)
-    private Long adminId; // ID del usuario que crea el grupo
+    @Column(name = "admin_id", nullable = false)
+    private Long adminId;
 
     @Column(nullable = false, length = 50)
-    private String tema; // <-- obligatorio
+    private String tema;
 
     // Getters y Setters
 
