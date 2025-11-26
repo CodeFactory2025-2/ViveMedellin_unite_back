@@ -1,5 +1,8 @@
 package com.communityapp.group.request;
 import com.communityapp.user.model.User;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +18,10 @@ public class JoinRequestController {
     private JoinRequestService joinRequestService;
 
     @PostMapping("/{groupId}/join-request")
-    public ResponseEntity<?> requestToJoin(@PathVariable Long groupId, @AuthenticationPrincipal User user) {
-        if (user == null) {
-            return ResponseEntity.status(401).body(Map.of("error", "Usuario no autenticado."));
-        }
+    public ResponseEntity<?> requestToJoin(@PathVariable Long groupId, @AuthenticationPrincipal User user, @Valid @RequestBody(required=false) JoinRequestDto body) {
+         if (user == null) {
+             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Usuario no autenticado."));
+    }
 
         Long userId = user.getId();
 
@@ -30,12 +33,12 @@ public class JoinRequestController {
                     "buttonLabel", "Solicitud enviada"
             ));
         } catch (IllegalStateException e) {
-            return ResponseEntity.status(409).body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", e.getMessage()));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.internalServerError()
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Hubo un error técnico al procesar tu solicitud. No fue posible enviarla. Por favor, inténtalo nuevamente más tarde"));
         }
     }

@@ -15,6 +15,7 @@ com\communityapp\auth\controller\AuthController$AuthRequest.class
 com\communityapp\group\model\GroupPost.class
 com\communityapp\auth\filter\JwtAuthenticationFilter.class
 com\communityapp\user\model\User.class
+com\communityapp\group\request\JoinRequestController.class
 com\communityapp\auth\controller\AuthController.class
 com\communityapp\group\repository\GroupRepository.class
 com\communityapp\group\service\GroupPostService.class
