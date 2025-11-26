@@ -17,6 +17,8 @@ Este proyecto es un backend desarrollado en Spring Boot, conectado a PostgreSQL 
 |Base de datos|PostgreSQL (Supabase)|
 |ORM|Hibernate JPA|
 |Pruebas|Postman / Swagger|
+|Contenedor | Docker|
+
 
 
 
@@ -136,7 +138,51 @@ Token requerido
     "mensaje": "Publicación creada correctamente"
 }
 ```
+### - Ingresar a un grupo privado 
+| Método | Endpoint | Descripción|
+|--------|--------|--------|
+|POST|/api/groups/{groupId}/join-request| Solicita el ingreso a un grupo privado|
+|POST | /api/groups/requests/{id}/accept | Aceptar solicitud de ingreso (solo admin)|
+|POST | /api/v1/groups/requests/{id}/reject| Rechaza solicitud de ingreso (solo admin) | 
 
+#### Request - Solicitar ingreso a un grupo 
+```java
+ /api/groups/{groupId}/join-request
+```
+
+#### Respuesta 
+```json
+{
+  "message": "Solicitud enviada exitosamente.",
+  "status": "PENDING",
+  "buttonLabel": "Solicitud enviada"
+}
+```
+
+#### Request - Aceptar solicitud de ingreso a un grupo
+```java
+ /api/groups/requests/{id}/accept
+```
+
+#### Respuesta 
+```json
+{
+  "message": "Solicitud aceptada correctamente.",
+  "status": "APPROVED"
+}
+```
+
+#### Request - Rechazar solicitud de ingreso a un grupo 
+```java
+ /api/groups/requests/{id}/reject
+```
+#### Respuesta 
+```json
+{
+  "message": "La solicitud fue rechazada correctamente.",
+  "status": "REJECTED"
+}
+```
 ## Microservicios de proyecto
 Este proyecto sigue una arquitectura monolito modular, donde los módulos actúan como microservicios lógicos:
 
@@ -203,6 +249,21 @@ POST /api/groups/{groupId}/posts
 ```java
 GET  /api/groups/{groupId}/posts/search|
 ```
+### Microservicio 4 - JoinRequestService
+#### Funcionalidad
+- Manejo de peticiones de ingreso a grupo privado 
+
+#### Endpoints 
+```java
+POST /api/groups/{groupId}/join-request
+
+```
+```java
+POST  /api/groups/requests/{id}/accept
+```
+```java
+POST   /api/groups/requests/{id}/reject
+```
 ## Tablas creadas automáticamente vía JPA - Base de datos
 | Tabla | Función | 
 |--------|--------|
@@ -258,6 +319,7 @@ mvn spring-boot:run
 | Variable      | Contraseña            |
 | ------------- | --------------------- |
 | `DB_PASSWORD` | `WgHXj6Ix4k020g53`    |
+| `JWT_SECRET` |vivemedellinSecretKey123|
 
 ### Swagger
 ```bash
